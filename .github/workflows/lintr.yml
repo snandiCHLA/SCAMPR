@@ -37,6 +37,7 @@ jobs:
      - name: Run lintr on SCAMPR scripts
        run: |
          print("Running lintr on SCAMPR/Scripts and SCAMPR/Macros...")
-         lintr::lint_dir(path = ".", pattern = "SCAMPR/(Scripts|Macros)/.*\\.R$")
+         results <- lintr::lint_dir(path = ".", pattern = "SCAMPR/(Scripts|Macros)/.*\\.R$")
+         print(results)
        shell: Rscript {0}
        continue-on-error: true
