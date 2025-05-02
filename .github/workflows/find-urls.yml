@@ -15,14 +15,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
  
+    - name: Create temp directory
+      run: mkdir temp
+ 
     - name: Search for URLs
       run: |
         echo "Scanning for URLs..."
-        grep -rEho "(http|https)://[^\s\"']+" . > urls_http.txt
-        grep -rEho "curl\s+['\"]?(http[s]?://[^'\" \t\n]+)" . | awk '{print $2}' >> urls_http.txt
-        sort -u urls_http.txt > unique_urls.txt
+        grep -rEho "(http|https)://[^\s\"']+" . --exclude-dir=temp > temp/urls_http.txt
+        grep -rEho "curl\s+['\"]?(http[s]?://[^'\" \t\n]+)" . --exclude-dir=temp | awk '{print $2}' >> temp/urls_http.txt
+        sort -u temp/urls_http.txt > temp/unique_urls.txt
  
     - name: Show found URLs
       run: |
         echo "Found URLs:"
-        cat unique_urls.txt
+        cat temp/unique_urls.txt
