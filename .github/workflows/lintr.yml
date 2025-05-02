@@ -17,8 +17,6 @@ jobs:
    runs-on: ubuntu-latest
    permissions:
      contents: read
-     security-events: write
-     actions: read
 
    steps:
      - name: Checkout code
@@ -33,19 +31,12 @@ jobs:
      - name: Install pak and lintr
        run: |
          Rscript -e 'install.packages("pak", repos = "https://cloud.r-project.org")'
-         Rscript -e 'pak::pkg_install(c("lintr", "jsonlite", "sessioninfo"))'
+         Rscript -e 'pak::pkg_install(c("lintr", "sessioninfo"))'
        shell: bash
 
      - name: Run lintr on SCAMPR scripts
        run: |
-         results <- lintr::lint_dir(path = "SCAMPR/Scripts")
-         results <- c(results, lintr::lint_dir(path = "SCAMPR/Macros"))
-         lintr::sarif_output(results, "lintr-results.sarif")
+         print("Running lintr on SCAMPR/Scripts and SCAMPR/Macros...")
+         lintr::lint_dir(path = ".", pattern = "SCAMPR/(Scripts|Macros)/.*\\.R$")
        shell: Rscript {0}
        continue-on-error: true
-
-     - name: Upload analysis results to GitHub
-       uses: github/codeql-action/upload-sarif@v3
-       with:
-         sarif_file: lintr-results.sarif
-         wait-for-processing: true
