@@ -18,14 +18,16 @@ jobs:
     - name: Create temp directory
       run: mkdir temp
  
-    - name: Search for URLs
+    - name: Search for URLs with filenames
       run: |
         echo "Scanning for URLs..."
-        grep -rEho "(http|https)://[^\s\"']+" . --exclude-dir=temp > temp/urls_http.txt
-        grep -rEho "curl\s+['\"]?(http[s]?://[^'\" \t\n]+)" . --exclude-dir=temp | awk '{print $2}' >> temp/urls_http.txt
-        sort -u temp/urls_http.txt > temp/unique_urls.txt
+        echo "=== HTTP/HTTPS URLs ===" > temp/urls_with_files.txt
+        grep -rEn "(http|https)://[^\s\"']+" . --exclude-dir=temp | tee -a temp/urls_with_files.txt
  
-    - name: Show found URLs
+        echo -e "\n=== URLs in curl commands ===" >> temp/urls_with_files.txt
+        grep -rEn "curl\s+['\"]?(http[s]?://[^'\" \t\n]+)" . --exclude-dir=temp | tee -a temp/urls_with_files.txt
+ 
+    - name: Show found URLs with source files
       run: |
-        echo "Found URLs:"
-        cat temp/unique_urls.txt
+        echo "Found URLs and source files:"
+        cat temp/urls_with_files.txt
