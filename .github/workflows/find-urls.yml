@@ -1,0 +1,28 @@
+name: Find URLs in Code
+ 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+ 
+jobs:
+  find-urls:
+    runs-on: ubuntu-latest
+ 
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+ 
+    - name: Search for URLs
+      run: |
+        echo "Scanning for URLs..."
+        grep -rEho "(http|https)://[^\s\"']+" . > urls_http.txt
+        grep -rEho "curl\s+['\"]?(http[s]?://[^'\" \t\n]+)" . | awk '{print $2}' >> urls_http.txt
+        sort -u urls_http.txt > unique_urls.txt
+ 
+    - name: Show found URLs
+      run: |
+        echo "Found URLs:"
+        cat unique_urls.txt
